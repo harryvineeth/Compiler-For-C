@@ -3,7 +3,7 @@
 	#include <stdio.h>
 	#include <stdlib.h>
 	#include "symbol.cpp"
-	int g_addr = 100;
+	int g_addr = 300;
 
 	extern "C" {
 		int yylex();
@@ -12,9 +12,8 @@
 	string str;
 	
 %}
-%token<str> ID 
-%token NUM SIZEOF REAL
-%token PTR DOT
+%token<str> ID NUM REAL
+%token PTR DOT SIZEOF
 %token TYPEDEF STRUCT
 %token<iValue> INT FLOAT VOID
 %token IF ELSE WHILE RETURN FOR 
@@ -23,7 +22,7 @@
 %token PREPROC
 %token ARRAY FUNCTION
 %token MAIN
-
+%token<str> GT LT LE GE NE EQ
 %left GT LT LE GE NE EQ
 %left AND OR
 %right '='
@@ -48,9 +47,9 @@ start:	Function start
 
 /* Declaration block */
 Declaration: Type Assignment ';' { if(redeclare($2))
-									{insert($2,$1,g_addr); g_addr+=4;}
-									else
-									{printf("Redecleration  %s \n",$2);} }
+					{insert($2,$1,g_addr); g_addr+=4;}
+				else
+					{printf("Redecleration  %s \n",$2);} }
 	| Assignment ';' 
 	| ID ';' {  printf("Undeclared Variable %s\n",$1);}	
 	| FunctionCall ';' 	
@@ -84,9 +83,9 @@ Assignment: pointer Assignment
 	| '-' NUM
 	| '-' REAL
 	| '-' ID
-	|   NUM {}
-	|   REAL
-	|   ID { $$ = $1;store($1);}
+	|  NUM {$$ = $1; store($1);}
+	|   REAL {$$ = $1; store($1);}
+	|   ID {$$=$1;store($1);}
 	| STRING
 	;
 
@@ -135,21 +134,16 @@ Type:	INT
 	;
 
 /* Loop Blocks */ 
-WhileStmt: WHILE '(' Expr ')' Stmt  
-	| WHILE '(' Expr ')' CompoundStmt 
+WhileStmt:WHILE{w_gen1();} '(' Expr ')'{w_gen2();} CompoundStmt{w_gen3();} 
 	;
 
 /* For Block */
-ForStmt: FOR '(' Expr ';' Expr ';' Expr ')' Stmt 
-       | FOR '(' Expr ';' Expr ';' Expr ')' CompoundStmt 
-       | FOR '(' Expr ')' Stmt 
-       | FOR '(' Expr ')' CompoundStmt 
+ForStmt: FOR '(' Expr ';'{f_gen1();} Expr ';'{f_gen2();} Expr ')'{f_gen3();} CompoundStmt {f_gen4();}
 	;
 
 /* IfStmt Block */
-IfStmt : IF '(' Expr ')' Stmt
-		| IF '(' Expr ')' CompoundStmt
-        | IF '(' Expr ')' CompoundStmt ELSE CompoundStmt
+IfStmt : IF '(' Expr ')'{if_gen1();} CompoundStmt{if_gen2();} ELSE CompoundStmt{if_gen3();}
+	
 	;
 
 /* Struct Statement */
@@ -185,8 +179,8 @@ pointer
 %%
 
 #include "lex.yy.c"
-#include "ctype.h"
-int count=0;
+#include <ctype.h>
+
 
 int main(int argc,char *argv[])
 {
@@ -216,3 +210,5 @@ void yyerror(char *s)
 {
 	printf("%d 	:	%s  %s \n",yylineno,s,yytext);
 }
+
+

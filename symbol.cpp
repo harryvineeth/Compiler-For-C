@@ -44,7 +44,8 @@ void insert(char *n, int type, int addr)
 
 	return;
 }
-int top=-1;
+int top=-1,lno=0,ltop=0;
+int lab_tags[20];
 char c[10]="0";
 char temp[10]="t";
 void printsym()
@@ -97,4 +98,89 @@ void temp_assign()
 	top=top-2;
 	strcpy(icg[top],temp);
 	c[0]++;
+}
+
+void f_gen1()
+{
+	printf("F%d: ",lno++ );
+
+}
+
+void f_gen2()
+{
+	strcpy(temp,"t");
+	strcat(temp,c);
+	printf("%s=not %s\n",temp,icg[top] );
+	printf("if %s goto F%d\n",temp,lno );
+	c[0]++;
+	lab_tags[++ltop]=lno;
+	lno++;
+	printf("goto F%d\n",lno );
+	lab_tags[++ltop]=lno;
+	printf("F%d: ",++lno );
+
+}
+
+void f_gen3()
+{
+	int x;
+	x=lab_tags[ltop--];
+	printf("goto F1\n");
+	printf("F%d: ",x );
+}
+
+void f_gen4()
+{
+	int x;
+	x=lab_tags[ltop--];
+	printf("goto F%d\n",lno);
+	printf("F%d: ",x );
+}
+
+void w_gen1()
+{
+	printf("W%d: ",lno++ );
+}
+
+void w_gen2()
+{
+	strcpy(temp,"t");
+	strcat(temp,c);
+	printf("%s=not %s\n",temp,icg[top] );
+	printf("if %s goto W%d\n",temp,lno );
+	c[0]++;
+}
+
+void w_gen3()
+{
+	printf("goto W1\n");
+	printf("W%d: ",lno);
+}
+
+void if_gen1()
+{
+	lno++;
+	strcpy(temp,"t");
+	strcat(temp,c);
+	printf("%s=not %s\n",temp,icg[top] );
+	printf("if %s goto IF%d\n",temp,lno );
+	c[0]++;
+	lab_tags[++ltop]=lno;
+}
+
+void if_gen2()
+{
+	int x;
+	lno++;
+	x=lab_tags[ltop--];
+	printf("goto IF%d\n",lno);
+	printf("IF%d: ",x );
+	lab_tags[++ltop]=lno;
+}
+
+void if_gen3()
+{
+	int z;
+	z=lab_tags[ltop--];
+	printf("IF%d\n",z );
 }
