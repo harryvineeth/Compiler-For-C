@@ -46,8 +46,9 @@ void insert(char *n, int type, int addr)
 }
 int top=-1,lno=0,ltop=0;
 int lab_tags[20];
-char c[10]="0";
-char temp[10]="t";
+int in = 0;
+char c[100];
+char temp[100]="t";
 void printsym()
 {
 	//cout<<"hello"<<endl;
@@ -58,7 +59,25 @@ void printsym()
 		s=it->second;
 		cout<<s.addr<<"  "<<s.name<<"  ";
 		for(int i=0;i<s.type.size();++i)
-			cout<<s.type[i]<<" ";
+		{
+			switch(s.type[i])
+			{
+				case 266 : printf("Integer ");
+							break;
+				case 265 : printf("Structure ");
+							break;
+				case 258 : printf("Identifier ");
+							break;
+				case 279 : printf("Function ");
+							break;
+				case 278 : printf("Array ");
+							break;
+				case 267 : printf("Float ");
+							break;
+				case 268 : printf("Void ");
+			}
+
+		}
 		cout<<endl;
 	}
 	return;
@@ -84,20 +103,39 @@ void store (char* str)
 	strcpy(icg[++top],str);
 }
 
+void printStack()
+{
+	int i;
+	printf("Stack\n");
+	for(i=1;i<top;i++)
+	{
+		printf("---%s---\n",icg[i]);
+	}
+}
+
+
 void assign()
 {
+
+	//printStack();
 	printf("%s = %s\n",icg[top-2],icg[top]);
 	top= top-2;
 }
 
 void temp_assign()
 {
+	//printStack();
 	strcpy(temp,"t");
+	sprintf(c,"%d",in);
 	strcat(temp,c);
-	printf("%s := %s '%s' %s\n",temp,icg[top-2],icg[top-1],icg[top]);
-	top=top-2;
+	if(strcmp(icg[top],"")!=0)
+	{ printf("%s := %s '%s' %s\n",temp,icg[top-2],icg[top-1],icg[top]); top=top-2;}
+	else
+		{printf("%s := %s '%s' %s\n",temp,icg[top-3],icg[top-2],icg[top-1]);
+	top=top-3;}
 	strcpy(icg[top],temp);
-	c[0]++;
+ 	in++;
+	
 }
 
 void f_gen1()
@@ -109,10 +147,11 @@ void f_gen1()
 void f_gen2()
 {
 	strcpy(temp,"t");
+	sprintf(c,"%d" ,in);
 	strcat(temp,c);
-	printf("%s=not %s\n",temp,icg[top] );
+	printf("%s =  not %s\n",temp,icg[top] );
 	printf("if %s goto F%d\n",temp,lno );
-	c[0]++;
+ 	in++;
 	lab_tags[++ltop]=lno;
 	lno++;
 	printf("goto F%d\n",lno );
@@ -145,10 +184,12 @@ void w_gen1()
 void w_gen2()
 {
 	strcpy(temp,"t");
+	sprintf(c,"%d" ,in);
+
 	strcat(temp,c);
-	printf("%s=not %s\n",temp,icg[top] );
+	printf("%s = not %s\n",temp,icg[top] );
 	printf("if %s goto W%d\n",temp,lno );
-	c[0]++;
+ 	in++;
 }
 
 void w_gen3()
@@ -161,10 +202,12 @@ void if_gen1()
 {
 	lno++;
 	strcpy(temp,"t");
+	sprintf(c,"%d" ,in);
+
 	strcat(temp,c);
-	printf("%s=not %s\n",temp,icg[top] );
+	printf("%s = not %s\n",temp,icg[top] );
 	printf("if %s goto IF%d\n",temp,lno );
-	c[0]++;
+ in++;
 	lab_tags[++ltop]=lno;
 }
 
@@ -183,4 +226,30 @@ void if_gen3()
 	int z;
 	z=lab_tags[ltop--];
 	printf("IF%d\n",z );
+}
+
+void array(char *id,char *ind)
+{
+	strcpy(temp,"t");
+	sprintf(c,"%d" ,in);
+
+	strcat(temp,c);
+	printf("%s := %s '*' 4\n",temp,ind);
+	char t[100];
+	strcpy(t,temp);
+ 	in++;
+	strcpy(temp,"t");
+	sprintf(c,"%d" ,in);
+	strcat(temp,c);
+	printf("%s := %s '['%s']'\n",temp,id,t );
+	strcpy(icg[top++],temp);
+ 	in++;
+
+}
+
+
+void func(char *fid)
+{
+	printf("Function Call Encountered : ");
+	printf("goto %s\n",fid);
 }

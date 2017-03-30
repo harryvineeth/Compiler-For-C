@@ -903,12 +903,12 @@ return PREPROC;
 case 17:
 YY_RULE_SETUP
 #line 22 "scanner.l"
-{yylval.realValue=atoi(yytext); return NUM;}
+{yylval.str=strdup(yytext); return NUM;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
 #line 23 "scanner.l"
-{yylval.realValue=atoi(yytext); return REAL;}
+{yylval.str=strdup(yytext); return REAL;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
@@ -918,32 +918,32 @@ YY_RULE_SETUP
 case 20:
 YY_RULE_SETUP
 #line 25 "scanner.l"
-return LE;
+{yylval.str=strdup(yytext); return LE;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
 #line 26 "scanner.l"
-return GE;
+{ yylval.str=strdup(yytext);return GE;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
 #line 27 "scanner.l"
-return EQ;
+{yylval.str=strdup(yytext); return EQ;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
 #line 28 "scanner.l"
-return NE;
+{yylval.str=strdup(yytext); return NE;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
 #line 29 "scanner.l"
-return GT;
+{yylval.str=strdup(yytext); return GT;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
 #line 30 "scanner.l"
-return LT;
+{yylval.str=strdup(yytext); return LT;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP

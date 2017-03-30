@@ -10,26 +10,34 @@ struct abc
 	int a;
 };
 
-int function()
+int foobar()
 {
+	a=a+5;
 	return 0;
 }
 
-int main()
+void main()
 {
 	int n=5;
-	int b;
+	int arr[10];
 	float x;
-	n=n+b*x-5;
-	if(x<5)
+	n=n+b*x+arr[1];
+	arr[1]=arr[2]+x+4;
+	if(n<x)
 	{
-		n=n+b;
+	 x = b + a;
 	}
-	else
+	else{
+	 x = n + b;
+	}
+
+	while( b < 5)
 	{
-		b=b+4;
-		x=x*0.2;
+          x = n+b;
 	}
-	
+
+	for(b=5;b<10;b=b+1){
+	 b = b + x;	
+	}			
 	return  0;
 }
